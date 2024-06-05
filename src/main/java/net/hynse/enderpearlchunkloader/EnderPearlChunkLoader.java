@@ -14,13 +14,11 @@ public class EnderPearlChunkLoader extends FoliaWrappedJavaPlugin implements Lis
 
     @Override
     public void onEnable() {
-        getLogger().info("EnderPearlChunkLoader has been enabled!");
         getServer().getPluginManager().registerEvents(this, this);
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("EnderPearlChunkLoader has been disabled!");
     }
 
     @EventHandler
