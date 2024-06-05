@@ -1,0 +1,4 @@
+name: EnderPearlChunkLoader
+version: '${version}'
+main: net.hynse.enderpearlchunkloader.EnderPearlChunkLoader
+api-version: '1.20'
