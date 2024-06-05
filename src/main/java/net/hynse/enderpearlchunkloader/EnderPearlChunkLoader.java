@@ -23,14 +23,18 @@ public class EnderPearlChunkLoader extends FoliaWrappedJavaPlugin implements Lis
 
     @EventHandler
     public void onEnderPearlThrow(ProjectileLaunchEvent event) {
+        getLogger().info("something throw something");
         Entity projectile = event.getEntity();
         if (projectile.getType() == EntityType.ENDER_PEARL) {
+            getLogger().info("wow the ender pearl lel");
             new WrappedRunnable() {
                 @Override
                 public void run() {
-                    if (!projectile.isDead() && !projectile.getLocation().getChunk().isLoaded()) {
+                    if (!projectile.isDead()) {
+                        getLogger().info("Yo im loaded");
                         loadChunksAroundLocation(projectile.getLocation());
-                    } else if (projectile.isDead()) {
+                    } else {
+                        getLogger().info("im not real");
                         cancel();
                     }
                 }
