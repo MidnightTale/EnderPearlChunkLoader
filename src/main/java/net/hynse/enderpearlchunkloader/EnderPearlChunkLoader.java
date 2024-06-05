@@ -2,13 +2,13 @@ package net.hynse.enderpearlchunkloader;
 
 import me.nahu.scheduler.wrapper.FoliaWrappedJavaPlugin;
 import me.nahu.scheduler.wrapper.runnable.WrappedRunnable;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class EnderPearlChunkLoader extends FoliaWrappedJavaPlugin implements Listener {
 
@@ -25,27 +25,28 @@ public class EnderPearlChunkLoader extends FoliaWrappedJavaPlugin implements Lis
 
     @EventHandler
     public void onEnderPearlThrow(ProjectileLaunchEvent event) {
-        Entity projectile = (Entity) event.getEntity();
+        Entity projectile = event.getEntity();
         if (projectile.getType() == EntityType.ENDER_PEARL) {
             new WrappedRunnable() {
                 @Override
                 public void run() {
-                    if (!projectile.isRemoved() && !projectile.getCommandSenderWorld().getChunkAt(projectile.blockPosition()).getStatus().isEmptyLoadStatus()) {
-                        loadChunksAroundLocation(projectile.getCommandSenderWorld(), projectile.getX(), projectile.getZ());
-                    } else if (projectile.isRemoved()) {
+                    if (!projectile.isDead() && !projectile.getLocation().getChunk().isLoaded()) {
+                        loadChunksAroundLocation(projectile.getLocation());
+                    } else if (projectile.isDead()) {
                         cancel();
                     }
                 }
-            }.runTaskTimerAtEntity(this, event.getEntity(),1, 1);
+            }.runTaskTimerAtEntity(this, event.getEntity(), 1, 1);
         }
     }
 
-    private void loadChunksAroundLocation(Level world, double x, double z) {
-        int chunkX = (int) x >> 4;
-        int chunkZ = (int) z >> 4;
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                world.getChunk(chunkX + dx, chunkZ + dz).setLoaded(true); // Load chunk
+    private void loadChunksAroundLocation(Location location) {
+        World world = location.getWorld();
+        int chunkX = location.getBlockX() >> 4;
+        int chunkZ = location.getBlockZ() >> 4;
+        for (int x = chunkX - 1; x <= chunkX + 1; x++) {
+            for (int z = chunkZ - 1; z <= chunkZ + 1; z++) {
+                world.getChunkAt(x, z).load(true); // Load chunk with force option
             }
         }
     }
